@@ -1,4 +1,4 @@
-# Budget_Brain_Chatbot
+# Budget_Brain
 ## TODO
 
 ### Must-Have
