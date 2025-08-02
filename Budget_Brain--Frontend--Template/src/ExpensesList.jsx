@@ -1,29 +1,20 @@
-import React, {useEffect, useState} from "react";
-import axios from 'axios';
+//import React, {useEffect, useState} from "react";
+//import axios from 'axios';
+import React from "react";
 
-function ExpensesList() {
-    const [expenses, setExpenses] =useState([])
-    useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/expenses/')
-        .then(response => setExpenses(response.data))
-        .catch(error => console.error(error));
-    }, []);
+function ExpensesList( { expenses }) {
+    return (
+        <div className='container mt-4'>
+            <h2>Expenses</h2>
+            <ul className='list-group'>
+                {expenses.map(exp => (
+                    <li key={exp.id}>
+                        {exp.description}: ${exp.amount}
+                    </li> 
+                ))}
+            </ul>
+        </div>
+    );
+    }
 
-
-
- 
-
-return (
-    <div>
-        <h2>Expenses</h2>
-        <ul>
-            {expenses.map(exp => (
-                <li key={exp.id}>
-                    {exp.description}: ${exp.amount}
-                </li> 
-            ))}
-        </ul>
-    </div>
-);
-}
-export default ExpensesList
+export default ExpensesList;
