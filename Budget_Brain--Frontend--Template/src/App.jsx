@@ -18,16 +18,29 @@ function App() {
   const handleExpenseAdded = (newExpense) => {
     setExpenses(prev => [...prev, newExpense]);
   };
- 
- return ( <div>
+
+  const handleDeleteExpense = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/expenses/${id}/`, { 
+        withCredentials: true,
+    });
+    setExpenses((prev) => prev.filter(exp => exp.id !== id));
+  } catch (err) {
+    console.error('Delete Failed:', err);
+  }
+};
+
+ return (
+ <div className='container py-4'>
     <h1>Budget Brain</h1>
     <AddExpenseForm onExpenseAdded={handleExpenseAdded}/>
-    <ExpensesList expenses={expenses} />
-    </div>
+    <ExpensesList expenses={expenses} onDelete={handleDeleteExpense} />
+  </div>
   );
 
-  
 }
+
+
 
 
 export default App;
