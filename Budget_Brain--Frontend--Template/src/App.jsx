@@ -27,8 +27,24 @@ function App() {
     setExpenses((prev) => prev.filter(exp => exp.id !== id));
   } catch (err) {
     console.error('Delete Failed:', err);
+    
   }
 };
+const handleUpdateExpense = async (id, partial) => {
+  try {
+    const res = await axios.patch(`http://127.0.0.1:8000/api/expenses/${id}/`, partial,             
+      {withCredentials: true /*check this later in case of bug*/}
+    );
+    const updated = res.data;
+    setExpenses(prev => prev.map(e =>(e.id ===id ? updated : e)))
+    return updated;
+    } catch (err) {
+      console.error('Update Failed:', err);
+      throw err;
+    }
+    
+  };
+}
 
  return (
  <div className='container py-4'>
@@ -38,7 +54,7 @@ function App() {
   </div>
   );
 
-}
+
 
 
 

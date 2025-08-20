@@ -1,6 +1,7 @@
 import React from "react";
+import ExpenseItem from "./ExpenseItem";
 
-function ExpensesList({ expenses, onDelete }) {
+function ExpensesList({ expenses, onDelete, onUpdate}) {
     return (
         <div className='container mt-4'>
             <div 
