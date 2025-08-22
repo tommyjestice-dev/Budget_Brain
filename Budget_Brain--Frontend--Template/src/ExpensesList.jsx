@@ -3,6 +3,7 @@ import ExpenseItem from "./ExpenseItem";
 
 function ExpensesList({ expenses, onDelete, onUpdate}) {
     return (
+      
         <div className='container mt-4'>
             <div 
                 className="card p-4 bg-white text-dark shadow" style={{ maxWidth: 400, margin: "2rem auto" }}>

@@ -44,19 +44,19 @@ const handleUpdateExpense = async (id, partial) => {
     }
     
   };
-}
-
- return (
- <div className='container py-4'>
-    <h1>Budget Brain</h1>
-    <AddExpenseForm onExpenseAdded={handleExpenseAdded}/>
-    <ExpensesList expenses={expenses} onDelete={handleDeleteExpense} />
-  </div>
-  );
 
 
+  return (
+    <div className='container py-4'>
+      <h1>Budget Brain</h1>
+      <AddExpenseForm onExpenseAdded={handleExpenseAdded}/>
+      <ExpensesList expenses={expenses} onDelete={handleDeleteExpense} />
+    </div>
+            );
 
 
+
+          }
 
 
 export default App;
