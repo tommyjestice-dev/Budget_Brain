@@ -50,6 +50,7 @@ const handleUpdateExpense = async (id, partial) => {
     }
     
   };
+<<<<<<< HEAD
   return (
   <div className="p-8 space-y-6"> 
 
@@ -84,3 +85,21 @@ const handleUpdateExpense = async (id, partial) => {
 }
 
 
+=======
+
+
+  return (
+    <div className='container py-4'>
+      <h1>Budget Brain</h1>
+      <AddExpenseForm onExpenseAdded={handleExpenseAdded}/>
+      <ExpensesList expenses={expenses} onDelete={handleDeleteExpense} />
+    </div>
+            );
+
+
+
+          }
+
+
+export default App;
+>>>>>>> 2879a069ec6e3b04768499ac30c8afe002e06969
