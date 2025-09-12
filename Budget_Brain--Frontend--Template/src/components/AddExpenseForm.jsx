@@ -1,15 +1,16 @@
 import { useState} from 'react';
 import axios from 'axios';
-function AddExpenseForm({ onExpenseAdded }) {
+export default function AddExpenseForm({ onExpenseAdded }) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
+    const [category, setCategory] = useState('Groceries');
     const [error, setError] = useState('');
     
-    const handleSubmit = async (e) => {
+    async function handleSubmit (e) {
         e.preventDefault();
-        console.log('Submit Fired');
         setError('');
 
+        const desc = description.trim();
         const parsedAmount = parseFloat(amount);
     
         if (!description || isNaN(parsedAmount)) {
@@ -20,6 +21,7 @@ function AddExpenseForm({ onExpenseAdded }) {
         const payload = {
         description: description.trim(),
         amount: parsedAmount,
+        category,
     };
 
         try {
@@ -28,10 +30,11 @@ function AddExpenseForm({ onExpenseAdded }) {
    
     
             const saved = res.data ?? payload;
-            onExpenseAdded?.(saved);
+            onExpenseAdded?.(res.data);
 
             setDescription('');
             setAmount('');
+            setCategory("Groceries");
             console.log('Form submitted!');
     }   
            catch (err) {
@@ -54,26 +57,33 @@ function AddExpenseForm({ onExpenseAdded }) {
     
 
     return (
-        <div className='container mt-4'>
-            <div className='card p-4 bg-white text-black' style={{ maxWidth: 400, margin: "2rem auto" }}>
-                <h2 className='mb-3'>Add New Expense</h2>
-                {error && <div className='alert alert-danger'>{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className='mb-3'>
-                        <label className='form-label'>Description</label>
+        <div className='max-w-md mx-auto mt-8'>
+            <div className='bg-budget-off-white text-white rounded-xl p-6 shadow'>
+                <h2 className='text-xl font-semibold mb-3'>Add New Expense</h2>
+                
+                {error && (<div className='bg-red-100 text-red-700 p-2 rounded mb-3'>{error}</div>)}
+               
+                <form onSubmit={handleSubmit} className='space-y-4'>
+                    <div>
+                        <label className='block text-sm font-medium mb-1'>Description</label>
                          <input
                             type='text'
-                            className='form-control'
+                            className='w-full bg-transparent border border-white/15 rounded px-3 py-2
+                            text-white-placeholder-white/40
+                       focus:outline-none focus:ring-2 focus:ring-budget-purple'
                             placeholder='Description'
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             required
                             /> 
                          </div>
-                         <div className='mb-3'>
+                         <div>
+                         <label className='block text-sm font-medium mb-1'>Amount</label>
                          <input
                             type='number'
-                            className='form-control'
+                            className='w-full bg-transparent border border-white/15 rounded px-3 py2
+                            text-white-placeholder-white/40
+                            focus:outline-none focus:ring-2 focus:ring-budget-purple'
                             placeholder='Amount'
                             value={amount}
                             onChange={e => setAmount(e.target.value)}
@@ -82,13 +92,28 @@ function AddExpenseForm({ onExpenseAdded }) {
                             step='0.01'
                          />
                     </div>
-                    <button type='submit' className='bg-budgetPurple hover:bg-budgetOrangeLight 
-                    text-black font-semibold px-4 py-2 rounded shadow'>Add Expense</button>
+                    <div>
+                        <label className='block text-sm font-medium mb-1'>Category</label>
+                        <select
+                        className='w-full bg-white text-black border border-white/15 rounded px-3 py-2
+                                   text-white-placeholder-white/40
+                                   focus:outline-none focus:ring-2 focus:ring-budget-purple'
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)} >
+                            <option>Groceries</option>
+                            <option>Gas</option>
+                            <option>Utilties</option>
+                            
+                        </select>
+                    </div>
+                    <button type='submit' 
+                    className='bg-budgetPurple hover:bg-budgetOrangeLight 
+                    text-white font-semibold px-4 py-2 rounded shadow'>Add Expense</button>
                 </form>    
                 </div>
                 </div>
-            );
+                );
         }
 
-export default AddExpenseForm;
+
 

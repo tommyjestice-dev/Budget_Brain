@@ -4,11 +4,8 @@ from .models import Expense
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
-        fields = '__all__'
-        extra_kwargs = {
-            'category' : {'required': False, 'allow_null': True },
-            'user': {'read_only': True}
+        fields = fields = ["id", "name", "amount", "category", "created_at"]
 
-        }
+        
 
    
