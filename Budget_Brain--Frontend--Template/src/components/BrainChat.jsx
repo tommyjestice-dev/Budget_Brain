@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function BrainChat() {
   const [message, setMessage] = useState("");
@@ -8,6 +8,8 @@ export default function BrainChat() {
 
   async function ask(e) {
     e.preventDefault();
+    const text = (message ?? "").trim();
+    if (!text) return;
     if (!message.trim()) return;
     setLoading(true);
     setErr("");
@@ -17,7 +19,7 @@ export default function BrainChat() {
       const res = await fetch("/api/brainchat/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message: text }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();

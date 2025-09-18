@@ -1,3 +1,4 @@
+import React from "react";
 export default function ExpenseList({ items, onDelete }) {
   if (!items?.length) {
     return <p className="text-gray-400 text-sm">No expenses this month.</p>;

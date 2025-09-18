@@ -1,3 +1,4 @@
+import React from "react";
 function GoalCard({ label, value, percent, color }) {
     return (
       <div className="mb-4">

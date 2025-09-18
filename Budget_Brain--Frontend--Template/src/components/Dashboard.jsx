@@ -4,6 +4,7 @@ import AddExpenseForm from "./AddExpenseForm";
 import ExpenseList from "./ExpenseList";
 import BrainChat from "./BrainChat";
 import ByCategoryChart from "./ByCategoryChart";
+import { ErrorBoundary } from "./Safe";
 
 const CATEGORIES = ["Rent", "Utilities", "Gas", "Groceries"];
 
@@ -20,6 +21,11 @@ function isInMonth(isoDateStr, monthStr) {
   return isoDateStr?.slice(0, 7) === monthStr;
 }
 
+// ✅ Define HookProbe OUTSIDE JSX (either here or at top of Dashboard, before return)
+function HookProbe() {
+  const r = React.useRef(null);
+  return <div data-probe ref={r}>Category</div>;
+}
 
 function ExpenseSummaryCard({ category, total, active }) {
   return (
@@ -31,10 +37,11 @@ function ExpenseSummaryCard({ category, total, active }) {
 }
 
 export default function Dashboard() {
+  console.log("React version (Dashboard):", React.version);
+
   const [monthStr, setMonthStr] = useState(getMonthStr());
   const [expenses, setExpenses] = useState([]);
   const todayFull = useMemo(() => formatFullDate(), []);
-
 
   async function loadExpenses() {
     try {
@@ -92,32 +99,26 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8 space-y-8">
-    
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">
           <span className="text-purple-400">Budget</span>{" "}
           <span className="text-orange-400">Brain</span>
         </h1>
         <div className="flex items-center gap-3">
-  <span className="text-sm text-gray-300">{todayFull}</span>
-  </div>
-</div>
+          <span className="text-sm text-gray-300">{todayFull}</span>
+        </div>
+      </div>
 
-
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-gray-800 rounded-lg p-6 shadow-md flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-4 text-center">Add an Expense</h2>
           <AddExpenseForm onAdded={loadExpenses} />
         </div>
         <div className="bg-gray-800 rounded-lg p-6 shadow-md">
-        <BrainChat />
+          <BrainChat />
         </div>
-
-        
       </div>
 
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-gray-800 rounded-lg p-6 shadow-md">
           <h2 className="text-xl font-semibold mb-4">Expenses</h2>
@@ -135,17 +136,21 @@ export default function Dashboard() {
 
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-3">This Month's Expenses</h3>
+            {/* ✅ monthExpenses is in scope here */}
             <ExpenseList items={monthExpenses} onDelete={handleDelete} />
           </div>
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 shadow-md">
-          <ByCategoryChart chartData={chartData} />
+          <ErrorBoundary>
+            {/* ✅ HookProbe rendered safely */}
+            <HookProbe />
+            <div className="w-full h-72">
+              <ByCategoryChart chartData={chartData} />
+            </div>
+          </ErrorBoundary>
         </div>
       </div>
-
-     
-      
     </div>
   );
 }

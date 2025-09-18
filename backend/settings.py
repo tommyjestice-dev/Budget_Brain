@@ -12,12 +12,19 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent  # folder with manage.py
+
+# Try explicit path; fall back to auto-discovery if you move it later
+loaded = load_dotenv(BASE_DIR / ".env")
+if not loaded:
+    load_dotenv(find_dotenv())
+
+# make it available via settings
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 
 
 # Quick-start development settings - unsuitable for production

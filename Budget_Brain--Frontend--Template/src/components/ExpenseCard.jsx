@@ -1,3 +1,4 @@
+import React from "react";
 function ExpenseSummaryCard({ category, spending, total, active }) {
     return (
       <div

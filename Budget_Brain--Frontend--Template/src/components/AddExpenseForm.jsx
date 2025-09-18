@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createExpense } from "../pages/api";
 
 export default function AddExpenseForm({ onAdded }) {
@@ -27,13 +27,13 @@ export default function AddExpenseForm({ onAdded }) {
           category,
         });
   
-        onAdded?.(saved);        // refresh list in Dashboard
+        onAdded?.(saved);       
         setDescription("");
         setAmount("");
         setCategory("Groceries");
         console.log("Form submitted!");
       } catch (err) {
-        // Keep the error simple; your helper will throw if 4xx/5xx
+        
         const data = err?.response?.data;
         let message = "Could not save expense. Please try again.";
         if (data && typeof data === "object") {

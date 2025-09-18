@@ -4,13 +4,21 @@ import requests
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings  
+from rest_framework import viewsets
+from .models import Expense
+from .serializers import ExpenseSerializer
+
+class ExpenseViewSet(viewsets.ModelViewSet):
+    queryset = Expense.objects.order_by("-created_at")
+    serializer_class = ExpenseSerializer
+
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 @csrf_exempt
 def brainchat(request):
     if request.method != "POST":
-        return HttpResponseBadRequest("POST only")
+     return HttpResponseBadRequest("POST only")
 
     key = settings.GEMINI_API_KEY
     if not key:
@@ -19,6 +27,7 @@ def brainchat(request):
     try:
         body = json.loads(request.body.decode("utf-8"))
         user_msg = (body.get("message") or "").strip()
+        
     except Exception:
         return HttpResponseBadRequest("Invalid JSON")
 
