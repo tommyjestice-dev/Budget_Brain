@@ -1,19 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function BrainChat() {
   const [message, setMessage] = useState("");
-  const [reply, setReply] = useState("");
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  async function ask(e) {
-    e.preventDefault();
-    const text = (message ?? "").trim();
-    if (!text) return;
-    if (!message.trim()) return;
-    setLoading(true);
+  // scroll anchors
+  const containerRef = useRef(null);
+  const endRef = useRef(null);
+
+  // Auto-scroll to bottom whenever messages change
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // ensure DOM paints first
+    requestAnimationFrame(() => {
+      endRef.current?.scrollIntoView({ block: "end" });
+      // hard set in case smooth fails
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [messages]);
+
+  const send = async () => {
+    const text = message.trim();
+    if (!text || loading) return;
+
+    const next = [...messages, { role: "user", text }];
+    setMessages(next);
+    setMessage("");
     setErr("");
-    setReply("");
+    setLoading(true);
 
     try {
       const res = await fetch("/api/brainchat/", {
@@ -21,44 +38,96 @@ export default function BrainChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setReply(data.reply || "(No reply)");
+
+      // Read raw first so 4xx HTML won't blow up JSON.parse
+      const raw = await res.text();
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        throw new Error(`Non-JSON (${res.status}): ${raw.slice(0, 200)}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.meta?.error || data?.error || `HTTP ${res.status}`);
+      }
+
+      const botText = data?.reply || "(No reply)";
+      setMessages([...next, { role: "bot", text: botText }]);
     } catch (e) {
       console.error(e);
-      setErr("Could not reach Gemini. Check backend logs.");
+      setErr(e?.message || "Could not reach server.");
+      // Optional: show a graceful fallback message in the log
+      setMessages(prev => [...prev, { role: "bot", text: "(Temporary issue — please try again.)" }]);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    send();
+  };
+
+  const onKeyDown = (e) => {
+    // Enter to send (Mac/PC), Shift+Enter to add newline
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  };
 
   return (
     <div className="text-white">
-      <h2 className="text-xl font-semibold mb-4">Brain Chat</h2>
+      <h2 className="text-xl font-semibold mb-3">Brain Chat</h2>
 
-      <form onSubmit={ask} className="space-y-3">
+      {/* Fixed-height chat window; page won't grow */}
+      <div
+        ref={containerRef}
+        className="h-80 overflow-y-auto rounded border border-white/10 p-2 space-y-2 bg-black/30"
+      >
+        {messages.map((m, i) => (
+          <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
+            <span
+              className={[
+                "inline-block px-3 py-2 rounded-lg max-w-[80%] break-words",
+                m.role === "user" ? "bg-purple-600 text-white" : "bg-slate-800 text-slate-100",
+              ].join(" ")}
+            >
+              {m.text}
+            </span>
+          </div>
+        ))}
+        {loading && <div className="text-sm text-gray-400">Thinking…</div>}
+        <div ref={endRef} />
+      </div>
+
+      {err && <p className="text-red-400 mt-2 text-sm">{err}</p>}
+
+      <form onSubmit={onSubmit} className="mt-3 space-y-2">
         <textarea
-          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          rows={3}
-          placeholder="Ask anything about your budget (e.g., “Can I afford $500 for a chair this month?”)"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-        />
-        <button
-          type="submit"
+          onKeyDown={onKeyDown}
+          rows={3}
+          className="w-full bg-gray-700 text-white rounded px-3 py-2 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+          placeholder='Ask anything about your budget…'
           disabled={loading}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow"
-        >
-          {loading ? "Thinking…" : "Ask Gemini"}
-        </button>
-      </form>
-
-      {err && <p className="text-red-400 mt-3 text-sm">{err}</p>}
-      {reply && (
-        <div className="mt-4 bg-gray-900 rounded p-3 border border-white/10 whitespace-pre-wrap">
-          {reply}
+        />
+        <div className="flex items-center gap-2">
+          <button
+            type="submit"
+            disabled={loading || !message.trim()}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow disabled:bg-gray-500"
+          >
+            {loading ? "Sending…" : "Ask Gemini"}
+          </button>
+          <span className="text-xs text-white/60">
+            Press <kbd className="px-1 py-0.5 rounded bg-white/10">Enter/Return</kbd> to send,{" "}
+            <kbd className="px-1 py-0.5 rounded bg-white/10">Shift</kbd>+<kbd className="px-1 py-0.5 rounded bg-white/10">Enter/Return</kbd> for newline
+          </span>
         </div>
-      )}
+      </form>
     </div>
   );
 }

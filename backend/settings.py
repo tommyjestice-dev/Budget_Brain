@@ -17,7 +17,7 @@ from dotenv import load_dotenv, find_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent  # folder with manage.py
 
 # Try explicit path; fall back to auto-discovery if you move it later
-loaded = load_dotenv(BASE_DIR / ".env")
+loaded = load_dotenv(BASE_DIR / "backend" / ".env")
 if not loaded:
     load_dotenv(find_dotenv())
 
