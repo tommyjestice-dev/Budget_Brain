@@ -6,18 +6,16 @@ export default function BrainChat() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  // scroll anchors
   const containerRef = useRef(null);
   const endRef = useRef(null);
 
-  // Auto-scroll to bottom whenever messages change
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    // ensure DOM paints first
+  
     requestAnimationFrame(() => {
       endRef.current?.scrollIntoView({ block: "end" });
-      // hard set in case smooth fails
+      
       el.scrollTop = el.scrollHeight;
     });
   }, [messages]);
@@ -39,7 +37,6 @@ export default function BrainChat() {
         body: JSON.stringify({ message: text }),
       });
 
-      // Read raw first so 4xx HTML won't blow up JSON.parse
       const raw = await res.text();
       let data = null;
       try {
@@ -57,7 +54,7 @@ export default function BrainChat() {
     } catch (e) {
       console.error(e);
       setErr(e?.message || "Could not reach server.");
-      // Optional: show a graceful fallback message in the log
+      
       setMessages(prev => [...prev, { role: "bot", text: "(Temporary issue — please try again.)" }]);
     } finally {
       setLoading(false);
@@ -70,7 +67,7 @@ export default function BrainChat() {
   };
 
   const onKeyDown = (e) => {
-    // Enter to send (Mac/PC), Shift+Enter to add newline
+
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       send();
@@ -81,7 +78,7 @@ export default function BrainChat() {
     <div className="text-white">
       <h2 className="text-xl font-semibold mb-3">Brain Chat</h2>
 
-      {/* Fixed-height chat window; page won't grow */}
+
       <div
         ref={containerRef}
         className="h-80 overflow-y-auto rounded border border-white/10 p-2 space-y-2 bg-black/30"
