@@ -24,7 +24,7 @@ export default function ByCategoryChart({ chartData }) {
     );
   }
 
-  // Define colors in the order of your categories
+ 
   const colors = ["#7C3AED", "#22D3EE", "#EF4444", "#22C55E"];
 
   return (
@@ -55,7 +55,7 @@ export default function ByCategoryChart({ chartData }) {
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={colors[index % colors.length]} // cycle through colors
+                fill={colors[index % colors.length]} 
               />
             ))}
           </Bar>

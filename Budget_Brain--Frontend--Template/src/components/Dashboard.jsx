@@ -21,7 +21,7 @@ function isInMonth(isoDateStr, monthStr) {
   return isoDateStr?.slice(0, 7) === monthStr;
 }
 
-// ✅ Define HookProbe OUTSIDE JSX (either here or at top of Dashboard, before return)
+
 function HookProbe() {
   const r = React.useRef(null);
   return <div data-probe ref={r}>Category</div>;
@@ -143,7 +143,7 @@ export default function Dashboard() {
 
         <div className="bg-gray-800 rounded-lg p-6 shadow-md">
           <ErrorBoundary>
-            {/* ✅ HookProbe rendered safely */}
+            
             <HookProbe />
             <div className="w-full h-72">
               <ByCategoryChart chartData={chartData} />
