@@ -1,58 +1,92 @@
-# Budget Brain 
+# Budget Brain 🧠💸
+Personal finance app that lets you **track expenses**, **visualize spending**, and **ask questions about your data in plain English** via an optional Gemini-powered chatbot.
 
-A simple full-stack expense tracker where users can add and view their expenses — built with React, Django, and Bootstrap. This app is a work in progress, and the goal is to help users manage their budget easily and visually.
-
----
-
-##  Features
-
-- [x] Add new expenses from frontend
-- [x] Connect frontend to Django backend via API
-- [x] Store expenses in SQLite3 database
-- [x] Display all expenses in UI
-- [ ] Add user authentication (signup, login, secure expenses per user)
-- [ ] Edit and delete expenses in frontend
-- [ ] Error handling and loading states in UI
-- [ ] Responsive and clean UI styling
+## ✨ Features
+- Add, edit, delete expenses (description, amount, category, date)
+- CSV upload with validation (rejects bad rows with clear error messages)
+- Interactive charts (spend by **category** and **month**)
+- Filter/search (category, date ranges)
+- REST API (Django REST Framework)
+- Optional AI Q&A: “How much did I spend on groceries last month?”
 
 ---
 
-##  Roadmap / TODO
-
-### Must-Have
-- [ ] User authentication (signup, login, logout)
-- [ ] Secure each user's data (only see your own expenses)
-- [ ] Edit and delete features in UI
-- [ ] Proper error handling and loading spinners
-- [ ] README updates (screenshots, demo link, etc.)
-
-### Bonus Features
-- [ ] Chatbot UI: talk to Budget Brain about your expenses
-- [ ] Graphs/charts for spending insights
-- [ ] Deploy backend (Render/Railway)
-- [ ] Deploy frontend (Netlify/Vercel)
-
-### Polish
-- [ ] Improve CSS styling
-- [ ] Add environment variable support
-- [ ] Clean up repo (.gitignore, remove sensitive files)
+## 🧱 Tech Stack
+**Frontend:** React (Vite), TypeScript, Tailwind CSS, Recharts  
+**Backend:** Django, Django REST Framework  
+**Database:** SQLite (dev)  
+**AI (optional):** Google Gemini API
 
 ---
 
-##  Tech Stack
+## 🚀 Quickstart (5 minutes)
 
-- Frontend: React + Bootstrap
-- Backend: Django + Django REST Framework
-- Database: SQLite3 (for now)
+### Prereqs
+- Node.js 18+ and npm
+- Python 3.10+ and pip
 
----
+### 1) Clone
+```bash
+git clone https://github.com/<your-username>/Budget_Brain.git
+cd Budget_Brain
 
-##  Screenshots (coming soon)
+## Backend Setup
+cd backend
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
 
----
+pip install -r requirements.txt  # (ensure DRF is in requirements)
+python manage.py migrate
+python manage.py runserver
 
-##  Inspiration
+## Frontend Setup (React + Vite)
+cd frontend
+npm install
+npm run dev
 
-This is part of my journey to land a job as a software developer. I’m building real tools that solve real problems such as managing finances the smart way.
+##Frontend (/frontend/.env):
+VITE_API_BASE_URL=http://127.0.0.1:8000
 
----
+##Backend (/backend/.env or add to settings):
+GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
+
+## Project Structure
+budget-brain/
+├─ backend/
+│  ├─ manage.py
+│  ├─ requirements.txt
+│  ├─ <project_name>/
+│  │  ├─ settings.py        # DATABASES uses sqlite3 by default
+│  └─ expenses/
+│     ├─ models.py          # Expense model
+│     ├─ serializers.py     # ExpenseSerializer
+│     ├─ views.py           # CRUD, summary, ai/query
+│     ├─ urls.py            # /api/expenses, /api/summary, /api/ai/query
+│
+└─ frontend/
+   ├─ src/
+   │  ├─ pages/
+   │  │  ├─ api.ts          # createExpense, getSummary, etc.
+   │  ├─ components/
+   │  │  ├─ AddExpenseForm.tsx
+   │  │  └─ Charts.tsx
+   │  └─ main.tsx
+   ├─ index.html
+   └─ package.json
+
+
+
+
+##API Endpoints (summary)
+Method	Endpoint	Description
+GET	/api/expenses/	List expenses (supports filters)
+POST	/api/expenses/	Create expense (JSON body)
+GET	/api/expenses/:id/	Retrieve single expense
+PATCH	/api/expenses/:id/	Update expense
+DELETE	/api/expenses/:id/	Delete expense
+GET	/api/summary	Aggregates (e.g., by category, month)
+POST	/api/ai/query	(Optional) Ask a question about spending
+
